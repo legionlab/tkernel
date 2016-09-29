@@ -47,18 +47,18 @@ class Core
     private function importKernelUtil()
     {
 
-        require_once __DIR__."/../../../settings/alias.php";
-        require_once __DIR__ . "/dispenser.php";
+        require_once $_SERVER['REQUEST_URI']."settings/alias.php";
+        require_once "dispenser.php";
 
         Session::create();
-        require_once __DIR__."/../../../settings/setups.php";
+        require_once $_SERVER['REQUEST_URI']."settings/setups.php";
 
         if(Settings::get('deployment'))
-            require_once __DIR__."/../../../settings/database.php";
+            require_once $_SERVER['REQUEST_URI']."settings/database.php";
 
         Security::errors();
 
-        require_once __DIR__."/../../../settings/access.php";
+        require_once $_SERVER['REQUEST_URI']."settings/access.php";
     }
 
     private function declareVars()
