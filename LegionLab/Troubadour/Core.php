@@ -32,6 +32,15 @@ class Core
             define('DOMAIN', $path);
         }
 
+        if(!defined("ROOT")) {
+            $path = substr($_SERVER["CONTEXT_DOCUMENT_ROOT"], 0, -1);
+            $path .= '/'.explode('/', $_SERVER['REQUEST_URI'])[1].'/';
+            if ($path === '/')
+                $path = '';
+            define('ROOT', $path);
+        }
+
+
         $this->importKernelUtil();
         $this->declareVars();
 
@@ -47,18 +56,18 @@ class Core
     private function importKernelUtil()
     {
 
-        require_once $_SERVER['REQUEST_URI']."settings/alias.php";
+        require_once ROOT."settings/alias.php";
         require_once "dispenser.php";
 
         Session::create();
-        require_once $_SERVER['REQUEST_URI']."settings/setups.php";
+        require_onceROOT."settings/setups.php";
 
         if(Settings::get('deployment'))
-            require_once $_SERVER['REQUEST_URI']."settings/database.php";
+            require_once ROOT."settings/database.php";
 
         Security::errors();
 
-        require_once $_SERVER['REQUEST_URI']."settings/access.php";
+        require_once ROOT."settings/access.php";
     }
 
     private function declareVars()
@@ -118,7 +127,7 @@ class Core
     {
         $class = ucfirst($class);
         $controller = "{$class}Controller";
-        if(file_exists(__DIR__."/../../Controllers/{$controller}.php")) {
+        if(file_exists(ROOT."source/Controllers/{$controller}.php")) {
 
             $controller = "\\Controllers\\{$controller}";
             $instance = new $controller();
