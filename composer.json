@@ -1,0 +1,24 @@
+{
+    "name" : "legionlab/troubadour-kernel",
+    "description": "Framework of TCC",
+    "type": "beta",
+    "license": "MITS",
+    "authors" : [
+        {
+          "name" : "Leonardo Vilarinho",
+          "email" : "leonardo-i@outlook.com"
+        }
+    ],
+    "require" : {
+        "php" : ">=5.4",
+        "legionlab/urban" : "^1.0.1",
+        "legionlab/utils": "^1.0.1"
+    },
+    "require-dev" : {
+    },
+    "autoload" : {
+        "psr-4" : {
+            "LegionLab\\Troubadour\\" : "LegionLab/Troubadour"
+        }
+    }
+}
