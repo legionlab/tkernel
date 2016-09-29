@@ -34,11 +34,11 @@ class Log
     {
         if(Settings::get('logs')) {
             $date = date('Y-m-d H:i:s');
-            if(file_exists(__DIR__."/../../../../".self::$dir . $archive)) {
+            if(file_exists(ROOT.self::$dir . $archive)) {
                 $msg = "________________________________________________________\n" .
                     "___" . $date . " by " . $_SERVER['REMOTE_ADDR'] . "\n" .
                     $msg . "\n";
-                file_put_contents(__DIR__."/../../../../".self::$dir . $archive, $msg, FILE_APPEND);
+                file_put_contents(ROOT.self::$dir . $archive, $msg, FILE_APPEND);
             }
             else {
                 Errors::display('Arquivo de log não existe');

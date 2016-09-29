@@ -51,7 +51,7 @@ abstract class Controller extends Template
         unset($_SESSION['post_backup']);
 
         $this->view['dir'] = mb_strtolower($_GET['controller']);
-        parent::__construct(__DIR__."/../../../../settings/skeleton/".Settings::get('skeleton'));
+        parent::__construct(ROOT."settings/skeleton/".Settings::get('skeleton'));
 
         $this->view['archive'] = mb_strtolower($_GET['method']);
 
@@ -156,15 +156,15 @@ abstract class Controller extends Template
         else
             $this->view['dir'] .= "/";
 
-        if(is_dir(__DIR__ . "/../../../../public/visions/{$this->view['dir']}")) {
-            if(file_exists(__DIR__ . "/../../../../public/visions/{$this->view['dir']}{$this->view['archive']}.urban")) {
-                $this->dir = __DIR__ . "/../../../../public/visions/";
+        if(is_dir(ROOT . "public/visions/{$this->view['dir']}")) {
+            if(file_exists(ROOT . "public/visions/{$this->view['dir']}{$this->view['archive']}.urban")) {
+                $this->dir = ROOT . "public/visions/";
                 $this->dispenserVars();
                 echo $this->make("{$this->view['dir']}/{$this->view['archive']}");
             }
             else {
                 //Errors::display('Arquivo da interface não foi encontrado');
-                echo __DIR__ . "/../../../../public/visions/{$this->view['dir']}{$this->view['archive']}.urban";
+                echo ROOT . "public/visions/{$this->view['dir']}{$this->view['archive']}.urban";
             }
         }
         else {
