@@ -55,7 +55,7 @@ abstract class Database
 
     /**
      * Tenta realizar a conexao com um banco de dados MySQL.
-     *
+     * @param $line - linha do código
      * @return bool|\PDO - false ou a conexao com o banco
      */
     private function connect($line)
@@ -73,32 +73,9 @@ abstract class Database
         }
         else
             return $this->connection;
-
     }
 
-    private function tryConnect($line, $dbname = null)
-    {
-        try {
-            if(!is_null($dbname))
-                $dbname =  ';dbname=' . $dbname;
-            Session::set("teste", $dbname);
-            $conn = new \PDO(
-                'mysql:host=' . Settings::get('dbhost') . $dbname,
-                Settings::get('dbuser'),
-                Settings::get('dbpassword'),
-                array(\PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8")
-            );
-            $conn->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-            $conn->setAttribute(\PDO::ATTR_ORACLE_NULLS, \PDO::NULL_EMPTY_STRING);
-            Log::register("Is connect \nIn l:".$line, "mysql_success");
-            return $conn;
-        } catch (\Exception $e) {
-            Log::register($e->getMessage()."In l:" .__LINE__);
-            return false;
-        }
-    }
-
-    public function insert($success = '', $fail = '')
+    public function insert($success = '@', $error = '@')
     {
         $data = $this->clear();
 
@@ -138,26 +115,18 @@ abstract class Database
 
 
                 $result = $this->close($prepare, 'Insert', __LINE__);
-
-                if($result) {
-                    if(!empty($success))
-                        $success($result);
-                }
-                else {
-                    if(!empty($fail))
-                        $fail($result);
-                }
+                $this->response($result, $success, $error);
                 return $result;
             } catch(\Exception $e) {
                 Log::register($e->getMessage()."In l:" .__LINE__);
             }
         }
-        if(!empty($fail))
-            $fail(false);
+        if($error !== '@')
+            $error();
         return false;
     }
 
-    public function update($attrOrCriteria = "id")
+    public function update($attrOrCriteria = "id", $success = '@', $error = '@')
     {
         $data = $this->clear();
         $table = $data['table'];
@@ -192,17 +161,22 @@ abstract class Database
                     foreach ($attrOrCriteria->getValues() as $key => $value)
                         $prepare->bindValue(":$key", $value);
 
-                return $this->close($prepare, 'Update', __LINE__);
+                $result = $this->close($prepare, 'Update', __LINE__);
+                $this->response($result, $success, $error);
+                return $result;
+
             } catch(\Exception $e) {
                 Log::register($e->getMessage()."In l:" .__LINE__);
             }
         }
+        if($error !== '@')
+            $error();
         return false;
 
     }
 
 
-    public function get($attrOrCriteria = 'id')
+    public function get($attrOrCriteria = 'id', $success = '@', $error = '@')
     {
         $data = $this->clear();
 
@@ -226,11 +200,14 @@ abstract class Database
                 $this->fill($result);
                 Saved::set($result);
                 Log::register("Get execute of: " . $sql. "\nIn l:" . __LINE__, "mysql_success");
-                return $this;
+                $this->response($result, $success, $error);
+                return $result;
             } catch (\Exception $e) {
                 Log::register($e->getMessage()."In l:" .__LINE__);
             }
         }
+        if($error !== '@')
+            $error();
         return false;
     }
 
@@ -262,7 +239,7 @@ abstract class Database
         return false;
     }
 
-    public function listAll($pager = null, $criteria = null)
+    public function listAll($pager = null, $criteria = null, $success = '@', $error = '@')
     {
         $data = $this->clear();
         $sql = "";
@@ -299,15 +276,18 @@ abstract class Database
                     array_push($return, $this->fills($row));
 
                 Log::register("List All execute of: " . $sql. "\nIn l:" . __LINE__, "mysql_success");
+                $this->response($return, $success, $error);
                 return $return;
             } catch (\Exception $e) {
                 Log::register($e->getMessage()."In l:" .__LINE__);
             }
         }
+        if($error !== '@')
+            $error();
         return false;
     }
 
-    public function sql($sql, $bind = array(), $all = true)
+    public function sql($sql, $bind = array(), $all = true, $success = '@', $error = '@')
     {
         if($this->debug)
             var_dump($sql);
@@ -323,19 +303,24 @@ abstract class Database
 
                 Log::register("SQL person execute of: " . $sql . "\nIn l:" . __LINE__, "mysql_success");
                 if($all)
-                    return  $prepare->fetchAll(\PDO::FETCH_ASSOC);
+                    $return =  $prepare->fetchAll(\PDO::FETCH_ASSOC);
                 else
-                    return  $prepare->rowCount();
+                    $return =  $prepare->rowCount();
+
+                $this->response($return, $success, $error);
+                return $return;
 
             } catch (\Exception $e) {
                 Log::register("Error SQL person:" . $e->getMessage() ."\nSQL:{$sql}" . "\nIn l:" . __LINE__);
             }
         }
 
+        if($error !== '@')
+            $error();
         return false;
     }
 
-    public function delete($success = '', $fail = '', $attrOrCriteria = 'id')
+    public function delete($attrOrCriteria = 'id', $success = '@', $fail = '@')
     {
         $data = $this->clear();
         $table = $data['table'];
@@ -358,14 +343,8 @@ abstract class Database
                     $prepare->bindValue(":$key", $value);
 
                 $result = $this->close($prepare, 'Delete', __LINE__);
-                if($result) {
-                    if(!empty($success))
-                        $success($result);
-                }
-                else {
-                    if(!empty($fail))
-                        $fail($result);
-                }
+                $this->response($result, $success, $fail);
+
                 return $result;
             } catch (\Exception $e) {
                 Log::register($e->getMessage()."In l:" .__LINE__);
