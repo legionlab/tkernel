@@ -75,18 +75,20 @@ abstract class Controller extends Template
      * Pega um parametro da URL
      *
      * @param $index - indice do parametro em numero
+     * @param $success - callback de sucesso
+     * @param $error - callback de erro
      * @return bool|mixed - valor do parametro ou false
      */
-    protected function param($index, $success = '', $error = '' )
+    protected function param($index, $success = '@', $error = '@' )
     {
         if(key_exists($index, $this->params)) {
-            if(!empty($success))
+            if($success !== '@')
                 $success($this->params[$index]);
             else
                 return $this->params[$index];
         }
         else {
-            if(!empty($error))
+            if($error !== '@')
                 $error(false);
         }
 
@@ -244,17 +246,17 @@ abstract class Controller extends Template
     }
 
 
-    public function ajax($success = '')
+    public function ajax($success = '@', $error = '@')
     {
         $isAjax = isset($_SERVER['HTTP_X_REQUESTED_WITH']) ? $_SERVER['HTTP_X_REQUESTED_WITH'] : null;
         $result = (strtolower($isAjax) === 'xmlhttprequest');
 
-        if($success != null) {
-            $success($result);
-        }
+        if($result and $success !== '@')
+            $success();
+        elseif(!$result and $error !== '@')
+            $error();
 
         return $result;
-
     }
 
     public function objectInSession(&$object)

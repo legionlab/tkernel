@@ -3,9 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="168e2535-fadc-453b-ac62-7263003ecd8e" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Collections/Saved.php" afterPath="$PROJECT_DIR$/Collections/Saved.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Collections/Session.php" afterPath="$PROJECT_DIR$/Collections/Session.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Collections/Settings.php" afterPath="$PROJECT_DIR$/Collections/Settings.php" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Control/Controller.php" afterPath="$PROJECT_DIR$/Control/Controller.php" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Control/Template.php" afterPath="$PROJECT_DIR$/Control/Template.php" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Development/Log.php" afterPath="$PROJECT_DIR$/Development/Log.php" />
@@ -194,7 +191,7 @@
       <option name="presentableId" value="Default" />
       <updated>1475171171393</updated>
       <workItem from="1475171176142" duration="1806000" />
-      <workItem from="1475254484169" duration="4424000" />
+      <workItem from="1475254484169" duration="4473000" />
     </task>
     <task id="LOCAL-00001" summary="Interface of collections">
       <created>1475259279095</created>
@@ -203,11 +200,18 @@
       <option name="project" value="LOCAL" />
       <updated>1475259279095</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Add interfaces and callbacks">
+      <created>1475259327137</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1475259327137</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="6230000" />
+    <option name="totallyTimeSpent" value="6279000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-1" y="26" width="1368" height="743" extended-state="6" />
@@ -263,8 +267,10 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
+    <option name="OFFER_MOVE_TO_ANOTHER_CHANGELIST_ON_PARTIAL_COMMIT" value="false" />
     <MESSAGE value="Interface of collections" />
-    <option name="LAST_COMMIT_MESSAGE" value="Interface of collections" />
+    <MESSAGE value="Add interfaces and callbacks" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add interfaces and callbacks" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
