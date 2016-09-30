@@ -2,8 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="168e2535-fadc-453b-ac62-7263003ecd8e" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Collections/Collection.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Collections/Life.php" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Collections/Saved.php" afterPath="$PROJECT_DIR$/Collections/Saved.php" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Collections/Session.php" afterPath="$PROJECT_DIR$/Collections/Session.php" />
@@ -196,12 +194,20 @@
       <option name="presentableId" value="Default" />
       <updated>1475171171393</updated>
       <workItem from="1475171176142" duration="1806000" />
-      <workItem from="1475254484169" duration="4383000" />
+      <workItem from="1475254484169" duration="4424000" />
     </task>
+    <task id="LOCAL-00001" summary="Interface of collections">
+      <created>1475259279095</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1475259279095</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="6189000" />
+    <option name="totallyTimeSpent" value="6230000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-1" y="26" width="1368" height="743" extended-state="6" />
@@ -255,6 +261,10 @@
   </component>
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Interface of collections" />
+    <option name="LAST_COMMIT_MESSAGE" value="Interface of collections" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

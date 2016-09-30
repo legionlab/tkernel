@@ -11,7 +11,7 @@ namespace LegionLab\Troubadour\Collections;
  * Time: 20:41
  */
 
-abstract class Settings
+abstract class Settings implements Collection
 {
     /**
      * @var array - lista com variaveis de configuracao
@@ -24,7 +24,7 @@ abstract class Settings
      * @param $key - nome da variavel
      * @param $value - valor da variavel
      */
-    public static function set($key, $value)
+    public static function set($key, $value = '')
     {
         self::$definitions[$key] = $value;
     }
@@ -33,16 +33,23 @@ abstract class Settings
      * Resgata uma variavel de configuracao, retorna false se ela nao existir.
      *
      * @param $key - nome da variavel a pegar
+     * @param $callback - função de callback
      * @return bool|mixed - false se nao encontrar, se encontrar retorna o valor da mesma
      */
-    public static function get($key)
+    public static function get($key, $callback = '@')
     {
         if(array_key_exists($key, self::$definitions)) {
-            return self::$definitions[$key];
+            $return = self::$definitions[$key];
+            if($callback !== '@')
+                $callback($return);
+            else
+                return self::$definitions[$key];
         }
         else {
-            return false;
+            if($callback !== '@')
+                $callback(false);
         }
+        return false;
     }
 
 }

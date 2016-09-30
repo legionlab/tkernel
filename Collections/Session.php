@@ -10,7 +10,7 @@ namespace LegionLab\Troubadour\Collections;
  * Date: 02/07/2016
  * Time: 20:21
  */
-abstract class Session
+abstract class Session implements Collection, Life
 {
     public static function display()
     {
@@ -53,7 +53,7 @@ abstract class Session
      * @param $key - nome da variavel
      * @param $value - valor da variavel
      */
-    public static function set($key, $value)
+    public static function set($key, $value = '')
     {
         $_SESSION[$key] = $value;
     }
@@ -62,11 +62,18 @@ abstract class Session
      * Pega uma variavel de sessao, caso não exista retorna false
      *
      * @param $key - nome da variavel
+     * @param $callback - função de callback
      * @return bool mixed - false ou a variavel de sessao
      */
-    public static function get($key)
+    public static function get($key, $callback = '@')
     {
-        return (isset($_SESSION[$key])) ? $_SESSION[$key] : false;
+        $return = (isset($_SESSION[$key])) ? $_SESSION[$key] : false;
+        if($callback !== '@')
+            $callback($return);
+        else
+            return $return;
+
+        return false;
     }
 
 }

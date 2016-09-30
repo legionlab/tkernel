@@ -10,7 +10,7 @@ namespace LegionLab\Troubadour\Collections;
  * Date: 13/07/2016
  * Time: 14:17
  */
-abstract class Saved
+abstract class Saved implements Collection, Life
 {
     /**
      * Cria um novo salvamento de dados usando dados do usuário para setar o nome da variavel
@@ -24,14 +24,14 @@ abstract class Saved
     /**
      * Armazena um array personalizado na variavel de salvamento, para caso não esteja armazenando o post.
      *
-     * @param $array - lista de dados a ser gravados
+     * @param $key - lista de dados a ser gravados
+     * @param $value - nada
      */
-    public static function set($array)
+    public static function set($key, $value = '')
     {
-        if(is_array($array)) {
-            Session::set(md5('saved' . $_SERVER['REMOTE_ADDR'] . $_SERVER['HTTP_USER_AGENT']), $array);
+        if(is_array($key)) {
+            Session::set(md5('saved' . $_SERVER['REMOTE_ADDR'] . $_SERVER['HTTP_USER_AGENT']), $key);
         }
-
     }
 
     /**
@@ -39,17 +39,23 @@ abstract class Saved
      * mesmo elemento, se houver encontrado retorna seu valor, se não retorna uma string vazia.
      *
      * @param $key - chave do array, ou seja, nome da variavel
+     * @param $callback - função de callback
      * @return string - valor do item encontrado ou string vazia
      */
-    public static function get($key)
+    public static function get($key, $callback = '@')
     {
         if(isset(Session::get(md5('saved' . $_SERVER['REMOTE_ADDR'] . $_SERVER['HTTP_USER_AGENT']))[$key])) {
-            return Session::get(md5('saved' . $_SERVER['REMOTE_ADDR'] . $_SERVER['HTTP_USER_AGENT']))[$key];
+            $return = Session::get(md5('saved' . $_SERVER['REMOTE_ADDR'] . $_SERVER['HTTP_USER_AGENT']))[$key];
+            if($callback !== '@')
+                $callback($return);
+
+            return $return;
         }
         else {
-            return '';
+            if($callback !== '@')
+                $callback(false);
         }
-
+        return '';
     }
 
     /**
