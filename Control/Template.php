@@ -110,7 +110,7 @@ abstract class Template extends UrbanTemplate
     /**
      * Tranforma scripts adicionados ao controller em tag <script> e finaliza o arquivo.
      */
-    private function scripts()
+    public function scripts()
     {
         $s = "";
         foreach ($this->scripts as $value) {
