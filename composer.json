@@ -11,13 +11,13 @@
     ],
     "require" : {
         "php" : ">=5.4",
-        "legionlab/urban" : "^1.0.1"
+        "legionlab/urban" : "^1.0"
     },
     "require-dev" : {
     },
     "autoload" : {
         "psr-4" : {
-            "LegionLab\\Troubadour\\" : "LegionLab/Troubadour"
+            "LegionLab\\Troubadour\\" : ""
         }
     }
 }
