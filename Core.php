@@ -60,7 +60,7 @@ class Core
         require_once "dispenser.php";
 
         Session::create();
-        require_onceROOT."settings/setups.php";
+        require_once ROOT."settings/setups.php";
 
         if(Settings::get('deployment'))
             require_once ROOT."settings/database.php";
