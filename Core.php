@@ -33,13 +33,11 @@ class Core
         }
 
         if(!defined("ROOT")) {
-            $path = substr($_SERVER["CONTEXT_DOCUMENT_ROOT"], 0, -1);
-            $path .= '/'.explode('/', $_SERVER['REQUEST_URI'])[1].'/';
+            $path = substr($_SERVER["CONTEXT_DOCUMENT_ROOT"], 0, -1).DOMAIN.'/';
             if ($path === '/')
                 $path = '';
             define('ROOT', $path);
         }
-
 
         $this->importKernelUtil();
         $this->declareVars();
