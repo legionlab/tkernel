@@ -210,7 +210,7 @@ abstract class Controller extends Template
             $v .= "/".$this->view['dir'];
 
         $this
-            ->add("content", "../../../public/{$v}/{$this->view['archive']}.urban")
+            ->add("content", "public/{$v}/{$this->view['archive']}.urban")
             ->add("controler", trim(strtolower($_GET['controller'])))
             ->add("method", trim(strtolower($_GET['method'])))
             ->add("skeleton", Settings::get('skeleton'))
