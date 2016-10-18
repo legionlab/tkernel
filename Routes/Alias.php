@@ -42,6 +42,7 @@ abstract class Alias
     public static function check($alias)
     {
         $alias = mb_strtolower($alias);
+
         if(in_array($alias, self::$alias))
             return array_keys(self::$alias, $alias)[0];
         else

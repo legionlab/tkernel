@@ -281,7 +281,7 @@ abstract class Controller extends Template
         else if(is_object($object)) {
             return $this->scan($object);
         }
-        return 0;
+        return false;
     }
 
     private function scan($o)
@@ -295,6 +295,6 @@ abstract class Controller extends Template
             }
             return $vars;
         }
-        return 0;
+        return false;
     }
 }

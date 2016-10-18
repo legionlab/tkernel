@@ -33,7 +33,7 @@ class Core
         }
 
         if(!defined("ROOT")) {
-            $path = substr($_SERVER["CONTEXT_DOCUMENT_ROOT"], 0, -1).DOMAIN.'/';
+            $path = $_SERVER["CONTEXT_DOCUMENT_ROOT"].DOMAIN.'/';
             if ($path === '/')
                 $path = '';
             define('ROOT', $path);
@@ -47,8 +47,8 @@ class Core
 
         if($this->defineAccess())
             $this->callLink();
-        else
-            Errors::display("Acesso Negado!");
+        //else
+           // Errors::display("Acesso Negado!");
     }
 
     private function importKernelUtil()
@@ -79,11 +79,12 @@ class Core
     private function defineAccess()
     {
         $alias = Alias::check($this->controller);
-        if($alias != false) {
+        if($alias !== false) {
             $explode = explode('/', $alias);
             $_GET['controller'] = $this->controller = $explode[0];
             $_GET['method'] = $this->method = $explode[1];
         }
+
 
         if(!Session::check())
             return false;
