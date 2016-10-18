@@ -165,8 +165,7 @@ abstract class Controller extends Template
                 echo $this->make("{$this->view['dir']}/{$this->view['archive']}");
             }
             else {
-                //Errors::display('Arquivo da interface não foi encontrado');
-                echo ROOT . "public/visions/{$this->view['dir']}{$this->view['archive']}.urban";
+                Errors::display('Arquivo da interface não foi encontrado');
             }
         }
         else {
