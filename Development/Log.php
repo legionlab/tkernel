@@ -20,7 +20,9 @@ class Log
      * Atributos privados
      * @var string - diretório onde se armazenará arquivos de log
      */
-    private static $dir = ROOT.'logs/';
+    private static $dir;
+
+    public static $success = false;
 
     /**
      * Registra um novo log, o log padrao é mysql_errors, onde são salvos os erros do banco de dados
@@ -32,17 +34,22 @@ class Log
      */
     public static function register($msg, $archive = 'mysql_errors')
     {
-        if(Settings::get('logs')) {
-            $date = date('Y-m-d H:i:s');
-            if(file_exists(self::$dir . $archive)) {
-                $msg = "________________________________________________________\n" .
-                    "___" . $date . " by " . $_SERVER['REMOTE_ADDR'] . "\n" .
-                    $msg . "\n";
-                file_put_contents(self::$dir . $archive, $msg, FILE_APPEND);
-            }
-            else {
-                Errors::display('Arquivo de log não existe');
+        if(self::$success or stripos($archive, 'error'))
+        {
+            self::$dir = ROOT.'logs/';
+            if(Settings::get('logs')) {
+                $date = date('Y-m-d H:i:s');
+                if(file_exists(self::$dir . $archive)) {
+                    $msg = "________________________________________________________\n" .
+                        "___" . $date . " by " . $_SERVER['REMOTE_ADDR'] . "\n" .
+                        $msg . "\n";
+                    file_put_contents(self::$dir . $archive, $msg, FILE_APPEND);
+                }
+                else {
+                    Errors::display('Arquivo de log não existe');
+                }
             }
         }
+
     }
 }
