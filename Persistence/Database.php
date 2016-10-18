@@ -442,16 +442,16 @@ abstract class Database
         }
         return false;
     }
-    
+
     private function response($result, $success, $fail)
     {
         if($result) {
             if($success !== '@') {
-                $success();
+                $success($result);
             }
         } else {
             if($fail !== '@') {
-                $fail();
+                $fail($result);
             }
         }
     }
