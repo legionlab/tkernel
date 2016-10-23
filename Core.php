@@ -47,8 +47,8 @@ class Core
 
         if($this->defineAccess())
             $this->callLink();
-        //else
-           // Errors::display("Acesso Negado!");
+        else
+            Errors::display("Acesso Negado!");
     }
 
     private function importKernelUtil()
