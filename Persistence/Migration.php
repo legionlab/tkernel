@@ -12,6 +12,8 @@ class Migration
     private $autoincrement;
     private $attrs = array();
     private $sql;
+	
+    public function __construct() {}
 
     public function database($name)
     {
