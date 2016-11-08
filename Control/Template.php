@@ -2,7 +2,6 @@
 
 namespace LegionLab\Troubadour\Control;
 use LegionLab\Troubadour\Collections\Settings;
-use LegionLab\Urban\UrbanTemplate;
 
 /**
  * Control Template
@@ -13,15 +12,14 @@ use LegionLab\Urban\UrbanTemplate;
  * Time: 23:07
  */
 
-abstract class Template extends UrbanTemplate
+abstract class Template
 {
     private $title;
     private $links = array();
     private $scripts = array();
 
-    public function __construct($dir)
+    public function __construct()
     {
-        parent::__construct($dir);
         $this->scripts = Settings::get('defaultJS');
         $this->links = Settings::get('defaultCSS');
     }
@@ -41,7 +39,6 @@ abstract class Template extends UrbanTemplate
         else {
             return $this->title;
         }
-
     }
 
     /**
