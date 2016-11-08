@@ -2,6 +2,7 @@
 
 namespace LegionLab\Troubadour;
 
+use LegionLab\Troubadour\Control\Controller;
 use LegionLab\Troubadour\Control\Errors;
 use LegionLab\Troubadour\Collections\Session;
 use LegionLab\Troubadour\Collections\Settings;
@@ -48,7 +49,7 @@ class Core
         if($this->defineAccess())
             $this->callLink();
         else
-            Errors::display("Acesso Negado!");
+            header("Location:".DOMAIN."/login/login");
     }
 
     private function importKernelUtil()
@@ -133,13 +134,24 @@ class Core
 
             if($page) {
                 if(count($_POST)) {
-                    if($_POST['token'] === Session::get('token') or in_array($_POST['token'], Settings::get('allowsAjax'))) {
-                        Session::set('token', false);
-                        Saved::create();
-                        $method = "{$method}Posted";
+                    $valid = true;
+                    if(isset($_POST['token'])) {
+                        if($_POST['token'] === Session::get('token') or in_array($_POST['token'], Settings::get('allowsAjax'))) {
+                            Saved::create($class);
+                            $method = "{$method}Posted";
+                        }
+                        else
+                            $valid = false;
                     }
-                    else {
-                        Errors::display('Token inválido', DOMAIN);
+                    else $valid = false;
+
+                    if($valid === false) {
+                        $isAjax = isset($_SERVER['HTTP_X_REQUESTED_WITH']) ? $_SERVER['HTTP_X_REQUESTED_WITH'] : null;
+                        $result = (strtolower($isAjax) === 'xmlhttprequest');
+                        if($result)
+                            echo "Token inválido, você não tem permissão de fazer isso";
+                        else
+                            Errors::display('Tente novamente', DOMAIN);
                         exit();
                     }
 
@@ -152,13 +164,14 @@ class Core
             }
             if(method_exists($instance, $method)) {
                 $instance->{$method}();
+
                 return $instance;
             }
             else
-                Errors::display("Método não encontrado [{$controller}/{$method}]");
+                Errors::display("Página não encontrada");
         }
         else
-            Errors::display("Controlador não encontrado [{$controller}]");
+            Errors::display("Página não encontrada");
 
         return false;
 
