@@ -26,8 +26,7 @@ abstract class Database
      */
     private $connection = null;
     private $table = null;
-    private $primaryKey = 'id';
-    protected $object = null;
+    protected $primaryKey = 'id';
     private $debug = false;
 
     private $database;
@@ -43,7 +42,6 @@ abstract class Database
 
         $this->table = $table;
         $this->primaryKey = $pk;
-        $this->object = is_object($this) ? $this : null;
     }
 
 
@@ -75,7 +73,7 @@ abstract class Database
             return $this->connection;
     }
 
-    public function insert($success = '@', $error = '@')
+    public function insert()
     {
         $data = $this->clear();
 
@@ -99,34 +97,32 @@ abstract class Database
                 $prepare = $this->connection->prepare($sql);
                 foreach ($data as $key => $value) {
                     if(class_exists($key)) {
-                        $k = $this->object->$key->primaryKey;
-                        $prepare->bindValue(":{$key}", $this->object->$key->$k);
+                        $k = $this->$key->primaryKey;
+                        $prepare->bindValue(":{$key}", $this->$key->$k);
                     }
-                    elseif(is_object($this->object->$key)) {
-                        $k = $this->object->$key->primaryKey;
-                        $prepare->bindValue(":{$key}", $this->object->$key->$k);
+                    elseif(is_object($this->$key)) {
+                        $k = $this->$key->primaryKey;
+                        $prepare->bindValue(":{$key}", $this->$key->$k);
                     }
                     else
-                        $prepare->bindValue(":{$key}", $this->object->$key);
+                        $prepare->bindValue(":{$key}", $this->$key);
                 }
                 $set = "{$this->primaryKey}";
-                if($this->object instanceof Database)
-                    $this->object->$set($this->object->last() + 1);
+                if($this instanceof Database)
+                    $this->$set($this->last() + 1);
 
 
-                $result = $this->close($prepare, 'Insert', __LINE__);
-                $this->response($result, $success, $error);
-                return $result;
+                return $this->close($prepare, 'Insert', __LINE__);
+
             } catch(\Exception $e) {
                 Log::register($e->getMessage()."In l:" .__LINE__);
+                throw new \Exception();
             }
         }
-        if($error !== '@')
-            $error();
         return false;
     }
 
-    public function update($attrOrCriteria = "id", $success = '@', $error = '@')
+    public function update($attrOrCriteria = "id")
     {
         $data = $this->clear();
         $table = $data['table'];
@@ -135,7 +131,8 @@ abstract class Database
         if($this->connection = $this->connect(__LINE__)) {
             $bind = "";
             foreach ($data as $key => $value)
-                $bind .= "{$key}=:{$key},";
+                if($key != $this->primaryKey)
+                    $bind .= "{$key}=:{$key},";
 
             $bind = mb_substr($bind, 0, -1);
 
@@ -146,37 +143,34 @@ abstract class Database
                 var_dump($sql);
             try {
                 $prepare = $this->connection->prepare($sql);
-                if(!$attrOrCriteria instanceof Criteria) {
-                    $prepare->bindValue(":{$attrOrCriteria}", $this->object->$attrOrCriteria);
-                    foreach ($data as $key => $value) {
-                        if(class_exists("\\Models\\".$key)) {
-                            $k = $this->object->$key->primaryKey;
-                            $prepare->bindValue(":{$key}", $this->object->$key->$k);
-                        }
-                        else
-                            $prepare->bindValue(":{$key}", $this->object->$key);
-                    }
-                }
+                if(!$attrOrCriteria instanceof Criteria)
+
+                    $prepare->bindValue(":{$attrOrCriteria}", $this->$attrOrCriteria);
                 else
                     foreach ($attrOrCriteria->getValues() as $key => $value)
                         $prepare->bindValue(":$key", $value);
 
-                $result = $this->close($prepare, 'Update', __LINE__);
-                $this->response($result, $success, $error);
-                return $result;
+                foreach ($data as $key => $value) {
+                    if(class_exists("\\Models\\".$key)) {
+                        $k = $this->$key->primaryKey;
+                        $prepare->bindValue(":{$key}", $this->$key->$k);
+                    }
+                    else
+                        if($key != $this->primaryKey)
+                            $prepare->bindValue(":{$key}", $this->$key);
+                }
+
+                return $this->close($prepare, 'Update', __LINE__);
 
             } catch(\Exception $e) {
                 Log::register($e->getMessage()."In l:" .__LINE__);
+                throw new \Exception();
             }
         }
-        if($error !== '@')
-            $error();
-        return false;
-
     }
 
 
-    public function get($attrOrCriteria = 'id', $success = '@', $error = '@')
+    public function get($attrOrCriteria = 'id')
     {
         $data = $this->clear();
 
@@ -186,11 +180,12 @@ abstract class Database
 
         if($this->debug)
             var_dump($sql);
+
         if($this->connection = $this->connect(__LINE__)) {
             try {
                 $prepare = $this->connection->prepare($sql);
                 if(!($attrOrCriteria instanceof Criteria))
-                    $prepare->bindValue(":{$attrOrCriteria}", $this->object->$attrOrCriteria);
+                    $prepare->bindValue(":{$attrOrCriteria}", $this->$attrOrCriteria);
                 else
                     foreach ($attrOrCriteria->getValues() as $key => $value)
                         $prepare->bindValue(":$key", $value);
@@ -198,17 +193,15 @@ abstract class Database
                 $prepare->execute();
                 $result = $prepare->fetch(\PDO::FETCH_ASSOC);
                 $this->fill($result);
-                Saved::set($result);
+                Saved::set([$this->className() => $result]);
                 Log::register("Get execute of: " . $sql. "\nIn l:" . __LINE__, "mysql_success");
-                $this->response($result, $success, $error);
+
                 return $result;
             } catch (\Exception $e) {
                 Log::register($e->getMessage()."In l:" .__LINE__);
+                throw new \Exception();
             }
         }
-        if($error !== '@')
-            $error();
-        return false;
     }
 
     public function count($criteria = null)
@@ -239,7 +232,7 @@ abstract class Database
         return false;
     }
 
-    public function listAll($pager = null, $criteria = null, $success = '@', $error = '@')
+    public function listAll($pager = null, $criteria = null)
     {
         $data = $this->clear();
         $sql = "";
@@ -266,8 +259,6 @@ abstract class Database
                     }
                 }
 
-
-
                 $prepare->execute();
                 $list = $prepare->fetchAll(\PDO::FETCH_ASSOC);
                 $return = array();
@@ -276,18 +267,15 @@ abstract class Database
                     array_push($return, $this->fills($row));
 
                 Log::register("List All execute of: " . $sql. "\nIn l:" . __LINE__, "mysql_success");
-                $this->response($return, $success, $error);
                 return $return;
             } catch (\Exception $e) {
                 Log::register($e->getMessage()."In l:" .__LINE__);
+                throw new \Exception();
             }
         }
-        if($error !== '@')
-            $error();
-        return false;
     }
 
-    public function sql($sql, $bind = array(), $all = true, $success = '@', $error = '@')
+    public function sql($sql, $bind = array(), $all = true)
     {
         if($this->debug)
             var_dump($sql);
@@ -306,21 +294,16 @@ abstract class Database
                     $return =  $prepare->fetchAll(\PDO::FETCH_ASSOC);
                 else
                     $return =  $prepare->rowCount();
-
-                $this->response($return, $success, $error);
                 return $return;
 
             } catch (\Exception $e) {
                 Log::register("Error SQL person:" . $e->getMessage() ."\nSQL:{$sql}" . "\nIn l:" . __LINE__);
+                throw new \Exception();
             }
         }
-
-        if($error !== '@')
-            $error();
-        return false;
     }
 
-    public function delete($attrOrCriteria = 'id', $success = '@', $fail = '@')
+    public function delete($attrOrCriteria = 'id')
     {
         $data = $this->clear();
         $table = $data['table'];
@@ -337,22 +320,17 @@ abstract class Database
             try {
                 $prepare = $this->connection->prepare($sql);
                 if(!($attrOrCriteria instanceof Criteria))
-                    $prepare->bindValue(":$attrOrCriteria", $this->object->$attrOrCriteria);
+                    $prepare->bindValue(":$attrOrCriteria", $this->$attrOrCriteria);
                 else
                     foreach ($attrOrCriteria->getValues() as $key => $value)
                     $prepare->bindValue(":$key", $value);
 
-                $result = $this->close($prepare, 'Delete', __LINE__);
-                $this->response($result, $success, $fail);
-
-                return $result;
+                return $this->close($prepare, 'Delete', __LINE__);
             } catch (\Exception $e) {
                 Log::register($e->getMessage()."In l:" .__LINE__);
+                throw new \Exception();
             }
         }
-        if(!empty($fail))
-            $fail(false);
-        return false;
     }
 
     public function last()
@@ -386,7 +364,7 @@ abstract class Database
     {
         $data = $this->clear();
         unset($data['table']);
-        $class = get_class($this->object);
+        $class = get_class($this);
         $o = new $class();
         foreach ($data as $key => $value) {
             $set = ucfirst(str_replace('_', '', $key));
@@ -396,20 +374,22 @@ abstract class Database
         return $o;
     }
 
-    private function fill($ob = null)
+    public function fill($ob = null)
     {
         $data = $this->clear();
         unset($data['table']);
         foreach ($data as $key => $value) {
             $set = ucfirst(str_replace('_', '', $key));
             if(isset($ob[$key]))
-                $this->object->$set($ob[$key]);
+                $this->$set(empty($ob[$key]) ? null : $ob[$key]);
         }
+        Saved::set([$this->className() => $data]);
+        return $this;
     }
 
     private function clear()
     {
-        $attr = get_class_vars(get_class($this->object));
+        $attr = get_class_vars(get_class($this));
         $attr2 = get_class_vars('\\LegionLab\\Troubadour\\Persistence\\Database');
 
 
@@ -419,7 +399,7 @@ abstract class Database
 
         $data = array();
         foreach ($attr as $key => $value)
-            $data[$key] = $this->object->$key;
+            $data[$key] = $this->$key;
         return $data;
     }
 
@@ -441,18 +421,5 @@ abstract class Database
             }
         }
         return false;
-    }
-    
-    private function response($result, $success, $fail)
-    {
-        if($result) {
-            if($success !== '@') {
-                $success();
-            }
-        } else {
-            if($fail !== '@') {
-                $fail();
-            }
-        }
     }
 }
