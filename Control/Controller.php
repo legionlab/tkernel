@@ -51,7 +51,7 @@ abstract class Controller extends Template
         unset($_SESSION['post_backup']);
 
         $this->view['dir'] = mb_strtolower($_GET['controller']);
-        parent::__construct(ROOT."settings/skeleton/".Settings::get('skeleton'));
+        parent::__construct();
 
         $this->view['archive'] = mb_strtolower($_GET['method']);
 
@@ -114,6 +114,8 @@ abstract class Controller extends Template
      */
     protected function to($controller, $method, $attributes = array())
     {
+        foreach ($_POST as $key => $value)
+            unset($_POST[$key]);
         $attr = "";
         if(is_array($attributes)) {
             $attr = implode("/", $attributes);
@@ -123,7 +125,7 @@ abstract class Controller extends Template
                 $attr = $attributes;
             }
         }
-
+        Session::set('token', false);
         $controller = mb_strtolower($controller);
         $method = mb_strtolower($method);
         $attr = mb_strtolower($attr);
@@ -159,14 +161,12 @@ abstract class Controller extends Template
             $this->view['dir'] .= "/";
 
         if(is_dir(ROOT . "public/visions/{$this->view['dir']}")) {
-            if(file_exists(ROOT . "public/visions/{$this->view['dir']}{$this->view['archive']}.urban")) {
-                $this->dir = ROOT . "public/visions/";
-                $this->dispenserVars();
-                echo $this->make("{$this->view['dir']}/{$this->view['archive']}");
+            if(file_exists(ROOT . "public/visions/{$this->view['dir']}{$this->view['archive']}.php")) {
+                $dir = ROOT . "public/visions/";
+                include "{$dir}{$this->view['dir']}/{$this->view['archive']}.php";
             }
             else {
-                //Errors::display('Arquivo da interface não foi encontrado');
-                echo ROOT . "public/visions/{$this->view['dir']}{$this->view['archive']}.urban";
+                Errors::display('Arquivo da interface não foi encontrado');
             }
         }
         else {
@@ -183,8 +183,7 @@ abstract class Controller extends Template
     {
         if(!$this->ajax()) {
             if($this->hasTemplate) {
-                $this->dispenserVars();
-                echo $this->make("/index");
+                include ROOT."settings/skeleton/".Settings::get('skeleton').'/'.'index.php';
             }
             else {
                 $this->getView();
@@ -192,36 +191,6 @@ abstract class Controller extends Template
         }
 
     }
-
-    private function dispenserVars()
-    {
-        foreach ($this->variables as $name => $var)
-        {
-            $this->add($name, $var);
-        }
-
-        foreach ($this->params as $key => $var)
-        {
-            $this->add("param{$key}", $var);
-        }
-
-        $v = "visions";
-        if(!empty($this->view['dir']) and $this->view['dir'] != "/")
-            $v .= "/".$this->view['dir'];
-
-        $this
-            ->add("content", "public/{$v}/{$this->view['archive']}.urban")
-            ->add("controler", trim(strtolower($_GET['controller'])))
-            ->add("method", trim(strtolower($_GET['method'])))
-            ->add("skeleton", Settings::get('skeleton'))
-            ->add("header", $this->header())
-            ->add("scripts", $this->scripts())
-            ->add("domain", DOMAIN)
-            ->add("object", clone $this)
-            ->add("title", $this->title())
-            ->add("site", $_SERVER['HTTP_HOST']);
-    }
-
 
 
     /**
@@ -240,13 +209,14 @@ abstract class Controller extends Template
         else {
             if(array_key_exists($key, $this->variables)) {
                 return $this->variables[$key];
-            }
+            } else
+                return '';
         }
-        return false;
+        return $this;
     }
 
 
-    public function ajax($success = '@', $error = '@')
+    public static function ajax($success = '@', $error = '@')
     {
         $isAjax = isset($_SERVER['HTTP_X_REQUESTED_WITH']) ? $_SERVER['HTTP_X_REQUESTED_WITH'] : null;
         $result = (strtolower($isAjax) === 'xmlhttprequest');
