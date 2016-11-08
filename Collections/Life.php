@@ -10,6 +10,6 @@ namespace LegionLab\Troubadour\Collections;
 
 interface Life
 {
-    public static function create();
+    public static function create($name = '@');
     public static function destroy();
 }

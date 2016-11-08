@@ -10,7 +10,7 @@ namespace LegionLab\Troubadour\Collections;
 
 interface Collection
 {
-    public static function get($key, $callback = '@');
+    public static function get($key, $attr = '@');
 
     public static function set($key, $value = '');
 }

@@ -36,20 +36,12 @@ abstract class Settings implements Collection
      * @param $callback - função de callback
      * @return bool|mixed - false se nao encontrar, se encontrar retorna o valor da mesma
      */
-    public static function get($key, $callback = '@')
+    public static function get($key, $attr = '@')
     {
         if(array_key_exists($key, self::$definitions)) {
-            $return = self::$definitions[$key];
-            if($callback !== '@')
-                $callback($return);
-            else
-                return self::$definitions[$key];
+            return self::$definitions[$key];
         }
-        else {
-            if($callback !== '@')
-                $callback(false);
-        }
-        return false;
+        return '';
     }
 
 }

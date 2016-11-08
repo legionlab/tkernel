@@ -16,9 +16,10 @@ abstract class Saved implements Collection, Life
      * Cria um novo salvamento de dados usando dados do usuário para setar o nome da variavel
      * e aramazenando o array de post atual
      */
-    public static function create()
+    public static function create($name = '@')
     {
-        Session::set(md5('saved' . $_SERVER['REMOTE_ADDR'] . $_SERVER['HTTP_USER_AGENT']), $_POST);
+        $name = strtolower($name);
+        Session::set(md5('saved' . $_SERVER['REMOTE_ADDR'] . $_SERVER['HTTP_USER_AGENT']), [$name => $_POST]);
     }
 
     /**
@@ -42,20 +43,13 @@ abstract class Saved implements Collection, Life
      * @param $callback - função de callback
      * @return string - valor do item encontrado ou string vazia
      */
-    public static function get($key, $callback = '@')
+    public static function get($key, $attr = '@')
     {
-        if(isset(Session::get(md5('saved' . $_SERVER['REMOTE_ADDR'] . $_SERVER['HTTP_USER_AGENT']))[$key])) {
-            $return = Session::get(md5('saved' . $_SERVER['REMOTE_ADDR'] . $_SERVER['HTTP_USER_AGENT']))[$key];
-            if($callback !== '@')
-                $callback($return);
 
-            return $return;
-        }
-        else {
-            if($callback !== '@')
-                $callback(false);
-        }
-        return '';
+        if(isset(Session::get(md5('saved' . $_SERVER['REMOTE_ADDR'] . $_SERVER['HTTP_USER_AGENT']))[$key][$attr]))
+            $return = Session::get(md5('saved' . $_SERVER['REMOTE_ADDR'] . $_SERVER['HTTP_USER_AGENT']))[$key][$attr];
+
+        return isset($return) ? $return : '';
     }
 
     /**

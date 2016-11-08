@@ -19,10 +19,10 @@ abstract class Session implements Collection, Life
     /**
      * Cria uma nova sessao
      */
-    public static function create()
+    public static function create($name = '@')
     {
         ini_set('session.cookie_httponly', 1);
-        session_start();
+        @session_start();
         if(!Session::get('login')) {
             Session::set('login', md5($_SERVER['REMOTE_ADDR'] . $_SERVER['HTTP_USER_AGENT']));
         }
@@ -65,15 +65,11 @@ abstract class Session implements Collection, Life
      * @param $callback - função de callback
      * @return bool mixed - false ou a variavel de sessao
      */
-    public static function get($key, $callback = '@')
+    public static function get($key, $attr = '@')
     {
         $return = (isset($_SESSION[$key])) ? $_SESSION[$key] : false;
-        if($callback !== '@')
-            $callback($return);
-        else
-            return $return;
 
-        return false;
+        return $return;
     }
 
 }
